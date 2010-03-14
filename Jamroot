@@ -1,0 +1,12 @@
+project run
+        : default-build release
+        ;
+
+exe shs2hdf5 
+        : src/shs2hdf5.cpp 
+        : <variant>release
+        : <cxxflags>"-std=gnu++0x -O2 -msse3 -march=native -fomit-frame-pointer -pipe"
+          <linkflags>"-lhdf5_hl_cpp -lhdf5_cpp"
+        ;
+
+install ./bin : shs2hdf5 ;  
