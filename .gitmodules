@@ -1,0 +1,3 @@
+[submodule "deps/clp"]
+	path = deps/clp
+	url = git://github.com/rseal/CommandLineParser.git
