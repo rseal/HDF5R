@@ -47,9 +47,9 @@ int main(){
 
    //format and display data table 0
    int idx=0;
-   for(int i=0; i<dim[0]; ++i){
+   for(unsigned int i=0; i<dim[0]; ++i){
       cout << "d[" << i << "]= [\n";
-      for(int j=0; j<dim[1]; ++j){
+      for(unsigned int j=0; j<dim[1]; ++j){
          if(!(j%10)) cout << "\n";
          idx = i*dim[0] + j;
          cout << data[idx].real << "," << data[idx].imag << " "; 

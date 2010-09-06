@@ -1,4 +1,0 @@
-#!/bin/bash
-
-rm -rf gcc* shs2hdf5
-

@@ -33,7 +33,7 @@ int main(){
    file.WriteAttrib<double>("SAMPLE_RATE", 64e6, H5::PredType::NATIVE_DOUBLE, H5::DataSpace());
 
    //generate a data table 
-   int i,j;
+   unsigned int i,j;
    for(i=0; i<dim[0]; ++i){
       for(j=0; j<dim[1]; ++j){
          int16_t idx = j + i*dim[1];

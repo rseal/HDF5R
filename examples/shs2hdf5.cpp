@@ -1,3 +1,19 @@
+// Copyright (c) 2010 Ryan Seal <rlseal -at- gmail.com>
+//
+// This file is part of HDF5 for Radar (HDF5R) Software.
+//
+// HDF5R is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//  
+// HDF5R is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with HDF5R.  If not, see <http://www.gnu.org/licenses/>.
 #include<shs/Shs.h>
 #include <HDF5/HDF5.hpp>
 #include <HDF5/Complex.hpp>
@@ -43,6 +59,7 @@ int main(int argc, char** argv){
    Arg arg1("f", "file to view", 1, true);
    clp.AddArg(arg1);
    clp.Parse();
+   clp.Validate();
 
    //get filename from command-line argument
    string fileName = clp.GetArgValue<string>("f");

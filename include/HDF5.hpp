@@ -1,3 +1,19 @@
+// Copyright (c) 2010 Ryan Seal <rlseal -at- gmail.com>
+//
+// This file is part of HDF5 for Radar (HDF5R) Software.
+//
+// HDF5R is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//  
+// HDF5R is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with HDF5R.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HDF5_HPP
 #define HDF5_HPP
 
@@ -24,6 +40,9 @@ struct HDF5{
    int numTables_;
    int flags_;
 
+   std::string h5FileName_;
+   H5::FileAccPropList fapl_;
+
    const std::string Num2Table(const int& tNum){
 
       //ensure that requested table is available - throw if not.
@@ -38,23 +57,30 @@ struct HDF5{
    }
 
    public:
-   HDF5( const std::string& fileName, const unsigned int& flags): fileSize_(1<<30), writeCount_(0),
-   tStr_("Table"), numTables_(0), flags_(flags){
+
+   HDF5( const std::string& fileName, const unsigned int& flags): 
+      fileSize_(1<<30), writeCount_(0), tStr_("Table"), numTables_(0), 
+      flags_(flags){
 
       //strip file extension if present
-      std::string fileNameIdx = fileName;
-      fileNameIdx = fileNameIdx.substr(0,fileName.find("."));
+      h5FileName_ = fileName;
+      h5FileName_ = h5FileName_.substr(0,fileName.find("."));
 
       //add file indexing - required for family VFD
-      fileNameIdx += "%04d.h5";
+      h5FileName_ += "%04d.h5";
 
       //create property list and set family VFD
-      H5::FileAccPropList fapl = H5::FileAccPropList::DEFAULT;
-      fapl.setFamily(fileSize_, H5::FileAccPropList::DEFAULT);
+      fapl_ = H5::FileAccPropList::DEFAULT;
+      fapl_.setFamily(fileSize_, H5::FileAccPropList::DEFAULT);
 
       //bad HDF5 design - must use shared_ptr to initialize H5File properly
-      H5FilePtr tFile(new H5::H5File(fileNameIdx, flags == hdf5::READ ? H5F_ACC_RDONLY : H5F_ACC_EXCL, H5::FileCreatPropList::DEFAULT, fapl));
-      file_ = tFile;
+      file_ = H5FilePtr(  
+            new H5::H5File( 
+               h5FileName_, 
+               (flags == hdf5::READ ? H5F_ACC_RDONLY : H5F_ACC_EXCL),
+               H5::FileCreatPropList::DEFAULT, 
+               fapl_
+               ));
 
       if(flags == hdf5::READ){
          //retrieve the number of tables available
