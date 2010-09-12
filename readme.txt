@@ -15,10 +15,15 @@ Installation:
 
 1. Use "scons install-headers" as root to install headers in
 /usr/local/include/HDF5.
+2. To build the examples, you'll need the CommandLineParser submodule.
+   - from the root directory, do the following:
+      1. git submodule init
+      2. git submodule update
+      3. cd into deps/clp, login as root, and run "scons install-headers"
+      4. go back to the root project and type "scons"
+
 
 Dependencies:
 
-1. CommandLineParser library required to build examples. 
-   ( http://github.com/rseal/CommandLineParser ).
-2. Latest scons ( http://www.scons.org ).
+1. Latest scons ( http://www.scons.org ).
 
