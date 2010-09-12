@@ -25,9 +25,11 @@
 
 namespace hdf5{
    enum{ READ=0,WRITE=1};
+   const static std::string FILE_EXT = "h5";
 };
 
 struct HDF5{
+
 
    typedef boost::shared_ptr<H5::H5File> H5FilePtr;
    H5FilePtr file_;
@@ -47,7 +49,8 @@ struct HDF5{
 
       //ensure that requested table is available - throw if not.
       if(tNum > numTables_)
-         throw std::runtime_error("Requested table number exceeds number of available tables\n");
+         throw std::runtime_error("Requested table number exceeds number "
+               "of available tables\n");
 
       //c-style int-to-string conversion to access table number
       char num[6];
@@ -67,11 +70,11 @@ struct HDF5{
       h5FileName_ = h5FileName_.substr(0,fileName.find("."));
 
       //add file indexing - required for family VFD
-      h5FileName_ += "%04d.h5";
+      h5FileName_ += "." + hdf5::FILE_EXT;
 
       //create property list and set family VFD
       fapl_ = H5::FileAccPropList::DEFAULT;
-      fapl_.setFamily(fileSize_, H5::FileAccPropList::DEFAULT);
+      //fapl_.setFamily(fileSize_, H5::FileAccPropList::DEFAULT);
 
       //bad HDF5 design - must use shared_ptr to initialize H5File properly
       file_ = H5FilePtr(  
@@ -111,7 +114,8 @@ struct HDF5{
    }
 
    template<typename T>
-      void ReadTable(const int& tableNum, std::vector<T>& buf, const H5::DataType& dType){
+      void ReadTable(const int& tableNum, std::vector<T>& buf, 
+            const H5::DataType& dType){
 
          std::string tNum = Num2Table(tableNum);
          dSet_ = file_->openDataSet(tNum);
@@ -140,7 +144,8 @@ struct HDF5{
    }
 
    template<typename T>
-      void WriteTAttrib(const std::string& name, const T& value, const H5::DataType& dType, const H5::DataSpace& dSpace){
+      void WriteTAttrib(const std::string& name, const T& value, 
+            const H5::DataType& dType, const H5::DataSpace& dSpace){
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
 
@@ -153,7 +158,8 @@ struct HDF5{
       }
 
    void WriteTStrAttrib(const std::string& name, const std::string& value){
-      //HDF5 has a mangled way of creating string attributes - this is a workaround
+      //HDF5 has a mangled way of creating string attributes - 
+      //this is a workaround
 
       //create a string array of length 1 containing the value to be written
       std::string strBuf[1] = {value};
@@ -161,7 +167,8 @@ struct HDF5{
       H5::StrType strType(H5::PredType::C_S1,256);
 
       //open the data set and create a new attribute of type string
-      H5::Attribute attrib = dSet_.createAttribute(name,strType,H5::DataSpace());
+      H5::Attribute attrib = dSet_.createAttribute(name,
+            strType,H5::DataSpace());
 
       //write value to the attribute and close
       attrib.write(strType,strBuf[0]);
@@ -169,7 +176,8 @@ struct HDF5{
    }
 
    template<typename T>
-      void ReadTAttrib(const int& tableNum, const std::string& name, T& value, const H5::DataType& dType){
+      void ReadTAttrib(const int& tableNum, const std::string& name, 
+            T& value, const H5::DataType& dType){
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
          
@@ -184,7 +192,9 @@ struct HDF5{
          attrib.close();
       }
 
-   const std::string ReadTStrAttrib(const int& tableNum, const std::string& name){
+   const std::string ReadTStrAttrib(const int& tableNum, 
+         const std::string& name){
+
       //attributes are clunky in HDF5++ implementation - this is a workaround
       //template is required to pass the proper value type
 
@@ -204,7 +214,9 @@ struct HDF5{
    }
 
    template<typename T>
-      void WriteAttrib(const std::string& name, const T& value, const H5::DataType& dType, const H5::DataSpace& dSpace){
+      void WriteAttrib(const std::string& name, const T& value, 
+            const H5::DataType& dType, const H5::DataSpace& dSpace){
+
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
 
@@ -218,7 +230,8 @@ struct HDF5{
       }
 
    void WriteStrAttrib(const std::string& name, const std::string& value){
-      //HDF5 has a mangled way of creating string attributes - this is a workaround
+      //HDF5 has a mangled way of creating string attributes - 
+      //this is a workaround
 
       //create a string array of length 1 containing the value to be written
       std::string strBuf[1] = {value};
@@ -227,7 +240,8 @@ struct HDF5{
 
       //open the root group and create a new attribute of type string
       H5::Group rootGroup = file_->openGroup("/");
-      H5::Attribute attrib = rootGroup.createAttribute(name,strType,H5::DataSpace());
+      H5::Attribute attrib = rootGroup.createAttribute(name,
+            strType,H5::DataSpace());
 
       //write value to the attribute and close
       attrib.write(strType,strBuf[0]);
@@ -235,7 +249,8 @@ struct HDF5{
    }
 
    template<typename T>
-      void ReadAttrib(const std::string& name, T& value, const H5::DataType& dType){
+      void ReadAttrib(const std::string& name, T& value, 
+            const H5::DataType& dType){
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
 
