@@ -30,7 +30,6 @@ namespace hdf5{
 
 struct HDF5{
 
-
    typedef boost::shared_ptr<H5::H5File> H5FilePtr;
    H5FilePtr file_;
    H5::DataSet dSet_;
@@ -74,7 +73,6 @@ struct HDF5{
 
       //create property list and set family VFD
       fapl_ = H5::FileAccPropList::DEFAULT;
-      //fapl_.setFamily(fileSize_, H5::FileAccPropList::DEFAULT);
 
       //bad HDF5 design - must use shared_ptr to initialize H5File properly
       file_ = H5FilePtr(  
