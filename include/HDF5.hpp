@@ -112,12 +112,12 @@ struct HDF5{
    }
 
    template<typename T>
-      void ReadTable(const int& tableNum, std::vector<T>& buf, 
+      void ReadTable(const int& tableNum, void* buf, 
             const H5::DataType& dType){
 
          std::string tNum = Num2Table(tableNum);
          dSet_ = file_->openDataSet(tNum);
-         dSet_.read(&buf[0], dType);
+         dSet_.read( buf, dType);
       }
 
    void CreateTable(const H5::DataType& dType, const H5::DataSpace& dSpace, 
