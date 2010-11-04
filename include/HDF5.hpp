@@ -53,7 +53,7 @@ struct HDF5{
 
       //c-style int-to-string conversion to access table number
       char num[6];
-      snprintf(num, 6, "T%04d", tNum);
+      snprintf(num, 6, "T%d", tNum);
 
       return std::string(num);
    }
@@ -102,7 +102,7 @@ struct HDF5{
       if(flags_ != hdf5::READ) 
          throw std::runtime_error("TableDims() is only valid in READ mode");
 
-      H5::DataSet dSet = file_->openDataSet("T0000");
+      H5::DataSet dSet = file_->openDataSet("T0");
       H5::DataSpace dSpace = dSet.getSpace();
 
       std::vector<hsize_t> dims(dSpace.getSimpleExtentNdims());
@@ -129,7 +129,7 @@ struct HDF5{
 
       //c-style int-to-string conversion to track table numbers
       char name[6];
-      snprintf(name, 6, "T%04d", writeCount_++);
+      snprintf(name, 6, "T%d", writeCount_++);
 
       //create a new data set - call WriteTable() to put data in it.
       dSet_ = file_->createDataSet(name,dType_,dSpace_,pList);

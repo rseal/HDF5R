@@ -28,7 +28,7 @@ int main(){
    //read the file's description string
    cout << "-------------------- DESCRIPTION --------------------" << endl;
    cout << file.Description() << endl;
-   file.ReadTable<complex_t>(0, data, cpx.GetRef());
+   file.ReadTable<complex_t>(0, &data[0], cpx.GetRef());
    cout << "-----------------------------------------------------\n" << endl;
 
    //create variables to store attributes
