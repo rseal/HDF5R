@@ -1,5 +1,5 @@
 #custom build flags
-flags = ['-O2', '-march=native', '-Wall', '-W' ]
+flags = ['-g', '-O2', '-march=native', '-Wall', '-W' ]
 
 #setup libraries to link and paths
 libs=['hdf5_hl_cpp','hdf5_cpp']

@@ -30,12 +30,14 @@ namespace hdf5{
 
 struct HDF5{
 
+   const static int STRING_TO_INT_SIZE = 10;
+   const static int STRING_ATTRIB_SIZE = 256;
+
    typedef boost::shared_ptr<H5::H5File> H5FilePtr;
    H5FilePtr file_;
    H5::DataSet dSet_;
    H5::DataType dType_;
    H5::DataSpace dSpace_;
-   const hsize_t fileSize_;
    int writeCount_;
    const std::string tStr_;
    int numTables_;
@@ -52,8 +54,10 @@ struct HDF5{
                "of available tables\n");
 
       //c-style int-to-string conversion to access table number
-      char num[6];
-      snprintf(num, 6, "T%d", tNum);
+      char num[ STRING_TO_INT_SIZE ];
+      snprintf(num, STRING_TO_INT_SIZE, "T%d", tNum);
+
+      std::cout << "num = " << num << std::endl;
 
       return std::string(num);
    }
@@ -61,9 +65,8 @@ struct HDF5{
    public:
 
    HDF5( const std::string& fileName, const unsigned int& flags): 
-      fileSize_(1<<30), writeCount_(0), tStr_("Table"), numTables_(0), 
-      flags_(flags){
-
+      writeCount_(0), tStr_("Table"), numTables_(0), flags_(flags)
+   {
       //strip file extension if present
       h5FileName_ = fileName;
       h5FileName_ = h5FileName_.substr(0,fileName.find("."));
@@ -128,8 +131,8 @@ struct HDF5{
       dSpace_ = dSpace;
 
       //c-style int-to-string conversion to track table numbers
-      char name[10];
-      snprintf(name, 10, "T%d", writeCount_++);
+      char name[ STRING_TO_INT_SIZE ];
+      snprintf(name, STRING_TO_INT_SIZE , "T%d", writeCount_++);
 
       //create a new data set - call WriteTable() to put data in it.
       dSet_ = file_->createDataSet(name,dType_,dSpace_,pList);
@@ -156,20 +159,19 @@ struct HDF5{
       }
 
    void WriteTStrAttrib(const std::string& name, const std::string& value){
-      //HDF5 has a mangled way of creating string attributes - 
-      //this is a workaround
 
-      //create a string array of length 1 containing the value to be written
-      std::string strBuf[1] = {value};
+      std::string str = value;
+      str.resize( STRING_ATTRIB_SIZE );
+
       //define the data type as a string with the value's length
-      H5::StrType strType(H5::PredType::C_S1,256);
+      H5::StrType strType(0, STRING_ATTRIB_SIZE );
 
       //open the data set and create a new attribute of type string
-      H5::Attribute attrib = dSet_.createAttribute(name,
-            strType,H5::DataSpace());
+      H5::Attribute attrib = 
+         dSet_.createAttribute(name, strType, H5::DataSpace(H5S_SCALAR));
 
       //write value to the attribute and close
-      attrib.write(strType,strBuf[0]);
+      attrib.write(strType, str );
       attrib.close();
    }
 
@@ -179,6 +181,7 @@ struct HDF5{
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
          
+         std::cout << "attribute read name = " << name << std::endl;
          std::string tNum = Num2Table(tableNum);
 
          //open data set and read attribute "name"
@@ -190,8 +193,7 @@ struct HDF5{
          attrib.close();
       }
 
-   const std::string ReadTStrAttrib(const int& tableNum, 
-         const std::string& name){
+   const std::string ReadTStrAttrib(const int& tableNum, const std::string& name){
 
       //attributes are clunky in HDF5++ implementation - this is a workaround
       //template is required to pass the proper value type
@@ -199,7 +201,10 @@ struct HDF5{
       std::string tNum = Num2Table(tableNum);
 
       std::string value;
-      H5::StrType strType(H5::PredType::C_S1,256);
+      value.resize( STRING_ATTRIB_SIZE );
+      std::cout << "attribute string read name = " << tNum << std::endl;
+
+      H5::StrType strType(0, STRING_ATTRIB_SIZE );
 
       dSet_ = file_->openDataSet(tNum);
       H5::Attribute attrib = dSet_.openAttribute(name);
@@ -232,9 +237,12 @@ struct HDF5{
       //this is a workaround
 
       //create a string array of length 1 containing the value to be written
-      std::string strBuf[1] = {value};
+      //std::string strBuf[1] = {value};
+      std::string str = value;
+      str.resize( STRING_ATTRIB_SIZE );
+
       //define the data type as a string with the value's length
-      H5::StrType strType(H5::PredType::C_S1,256);
+      H5::StrType strType(0, STRING_ATTRIB_SIZE );
 
       //open the root group and create a new attribute of type string
       H5::Group rootGroup = file_->openGroup("/");
@@ -242,13 +250,12 @@ struct HDF5{
             strType,H5::DataSpace());
 
       //write value to the attribute and close
-      attrib.write(strType,strBuf[0]);
+      attrib.write(strType, str);
       attrib.close();
    }
 
    template<typename T>
-      void ReadAttrib(const std::string& name, T& value, 
-            const H5::DataType& dType){
+      void ReadAttrib(const std::string& name, T& value, const H5::DataType& dType){
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
 
@@ -266,7 +273,9 @@ struct HDF5{
       //template is required to pass the proper value type
 
       std::string value;
-      H5::StrType strType(H5::PredType::C_S1,256);
+      value.resize( STRING_ATTRIB_SIZE );
+
+      H5::StrType strType(0, STRING_ATTRIB_SIZE );
       //access the built-in root group and create a new attribute for it.
       H5::Group rootGroup = file_->openGroup("/");
       H5::Attribute attrib = rootGroup.openAttribute(name);

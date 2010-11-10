@@ -29,7 +29,8 @@ int main(){
          "used with fixed size tables.\n");
 
    //write attributes to the root group "/"
-   file.WriteStrAttrib("START_TIME", "00:00:00"); 
+   string t = "00:00:00";
+   file.WriteStrAttrib("START_TIME", "00:00:00" ); 
    file.WriteAttrib<double>("SAMPLE_RATE", 64e6, H5::PredType::NATIVE_DOUBLE, H5::DataSpace());
 
    //generate a data table 
@@ -48,9 +49,10 @@ int main(){
    //create 9200 data tables with attributes
    for(int i=0; i<99999; ++i){
       file.CreateTable(cpx.GetRef(),space);
-      cout << "table num = " << boost::lexical_cast<string>(i) << endl;
-      //file.WriteTAttrib<int>("TIME", i,  H5::PredType::NATIVE_INT, DataSpace());
-      //file.WriteTStrAttrib("TABLENUM", boost::lexical_cast<string>((long)i));
+      cout << "table num = " << i << endl;
+      string num = boost::lexical_cast<string>(i);
+      file.WriteTAttrib<int>("TIME", i,  H5::PredType::NATIVE_INT, DataSpace());
+      file.WriteTStrAttrib("TABLENUM", num );
       file.WriteTable(reinterpret_cast<void*>(&data[0]));
    }
 
