@@ -19,7 +19,7 @@ int main(){
    
    //vector used to create HDF5 DataSpace information
    vector<hsize_t> dim(2);
-   dim[0] = 10; dim[1] = 100;
+   dim[0] = 10; dim[1] = 10;
 
    //complex vector to create a data table
    vector<complex_t> data(dim[0]*dim[1]);
@@ -46,10 +46,11 @@ int main(){
    DataSpace space(2,&dim[0]);
 
    //create 9200 data tables with attributes
-   for(int i=0; i<9200; ++i){
+   for(int i=0; i<99999; ++i){
       file.CreateTable(cpx.GetRef(),space);
-      file.WriteTAttrib<int>("TIME", i,  H5::PredType::NATIVE_INT, DataSpace());
-      file.WriteTStrAttrib("TABLENUM", boost::lexical_cast<string>(i));
+      cout << "table num = " << boost::lexical_cast<string>(i) << endl;
+      //file.WriteTAttrib<int>("TIME", i,  H5::PredType::NATIVE_INT, DataSpace());
+      //file.WriteTStrAttrib("TABLENUM", boost::lexical_cast<string>((long)i));
       file.WriteTable(reinterpret_cast<void*>(&data[0]));
    }
 

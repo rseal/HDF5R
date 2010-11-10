@@ -128,8 +128,8 @@ struct HDF5{
       dSpace_ = dSpace;
 
       //c-style int-to-string conversion to track table numbers
-      char name[6];
-      snprintf(name, 6, "T%d", writeCount_++);
+      char name[10];
+      snprintf(name, 10, "T%d", writeCount_++);
 
       //create a new data set - call WriteTable() to put data in it.
       dSet_ = file_->createDataSet(name,dType_,dSpace_,pList);
