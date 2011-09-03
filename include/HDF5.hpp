@@ -55,9 +55,9 @@ struct HDF5{
 
       //c-style int-to-string conversion to access table number
       char num[ STRING_TO_INT_SIZE ];
-      snprintf(num, STRING_TO_INT_SIZE, "T%d", tNum);
+      snprintf(num, STRING_TO_INT_SIZE, "T%08d", tNum);
 
-      std::cout << "num = " << num << std::endl;
+      //std::cout << "num = " << num << std::endl;
 
       return std::string(num);
    }
@@ -105,7 +105,7 @@ struct HDF5{
       if(flags_ != hdf5::READ) 
          throw std::runtime_error("TableDims() is only valid in READ mode");
 
-      H5::DataSet dSet = file_->openDataSet("T0");
+      H5::DataSet dSet = file_->openDataSet("T00000000");
       H5::DataSpace dSpace = dSet.getSpace();
 
       std::vector<hsize_t> dims(dSpace.getSimpleExtentNdims());
@@ -132,7 +132,9 @@ struct HDF5{
 
       //c-style int-to-string conversion to track table numbers
       char name[ STRING_TO_INT_SIZE ];
-      snprintf(name, STRING_TO_INT_SIZE , "T%d", writeCount_++);
+      snprintf(name, STRING_TO_INT_SIZE , "T%08d", writeCount_++);
+
+      //std::cout << "Write Table " << name << std::endl;
 
       //create a new data set - call WriteTable() to put data in it.
       dSet_ = file_->createDataSet(name,dType_,dSpace_,pList);
@@ -181,7 +183,7 @@ struct HDF5{
          //attributes are clunky in HDF5++ implementation - this is a workaround
          //template is required to pass the proper value type
          
-         std::cout << "attribute read name = " << name << std::endl;
+         //std::cout << "attribute read name = " << name << std::endl;
          std::string tNum = Num2Table(tableNum);
 
          //open data set and read attribute "name"
@@ -202,7 +204,7 @@ struct HDF5{
 
       std::string value;
       value.resize( STRING_ATTRIB_SIZE );
-      std::cout << "attribute string read name = " << tNum << std::endl;
+      //std::cout << "attribute string read name = " << tNum << std::endl;
 
       H5::StrType strType(0, STRING_ATTRIB_SIZE );
 
