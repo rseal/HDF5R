@@ -30,20 +30,26 @@ namespace hdf5{
 
 struct HDF5{
 
-   const static int STRING_TO_INT_SIZE = 10;
-   const static int STRING_ATTRIB_SIZE = 256;
+   const static int STRING_TO_INT_SIZE  = 10;
+   const static int STRING_ATTRIB_SIZE  = 256;
+   const static double FILE_LIMIT_BYTES = 2048000000.0;
+   const static int BYTES_PER_SAMPLE    = 4;
 
    typedef boost::shared_ptr<H5::H5File> H5FilePtr;
    H5FilePtr file_;
    H5::DataSet dSet_;
    H5::DataType dType_;
    H5::DataSpace dSpace_;
+   double tableSizeBytes_;
+   double fileSizeBytes_;
    int writeCount_;
    const std::string tStr_;
    int numTables_;
    int flags_;
+   int fileIndex_;
 
    std::string h5FileName_;
+   std::string h5BaseFileName_;
    H5::FileAccPropList fapl_;
 
    const std::string Num2Table(const int& tNum){
@@ -62,17 +68,14 @@ struct HDF5{
       return std::string(num);
    }
 
-   public:
-
-   HDF5( const std::string& fileName, const unsigned int& flags): 
-      writeCount_(0), tStr_("Table"), numTables_(0), flags_(flags)
+   void GenerateNewFile( )
    {
-      //strip file extension if present
-      h5FileName_ = fileName;
-      h5FileName_ = h5FileName_.substr(0,fileName.find("."));
+      char num[ STRING_TO_INT_SIZE ];
+      snprintf( num, STRING_TO_INT_SIZE, "%08d", ++fileIndex_ );
+      std::string file_index_str(num);
 
       //add file indexing - required for family VFD
-      h5FileName_ += "." + hdf5::FILE_EXT;
+      h5FileName_ = h5BaseFileName_ + "_" + file_index_str + "." + hdf5::FILE_EXT;
 
       //create property list and set family VFD
       fapl_ = H5::FileAccPropList::DEFAULT;
@@ -81,10 +84,23 @@ struct HDF5{
       file_ = H5FilePtr(  
             new H5::H5File( 
                h5FileName_, 
-               (flags == hdf5::READ ? H5F_ACC_RDONLY : H5F_ACC_EXCL),
+               (flags_ == hdf5::READ ? H5F_ACC_RDONLY : H5F_ACC_EXCL),
                H5::FileCreatPropList::DEFAULT, 
                fapl_
                ));
+
+   }
+
+   public:
+
+   HDF5( const std::string& fileName, const unsigned int& flags): 
+      fileSizeBytes_(0), writeCount_(0), tStr_("Table"), numTables_(0), flags_(flags), fileIndex_(0)
+   {
+      //strip file extension if present
+      h5BaseFileName_ = fileName;
+      h5BaseFileName_ = h5BaseFileName_.substr(0,fileName.find("."));
+
+      this->GenerateNewFile();
 
       if(flags == hdf5::READ){
          //retrieve the number of tables available
@@ -130,6 +146,8 @@ struct HDF5{
       dType_ = dType;
       dSpace_ = dSpace;
 
+      tableSizeBytes_ = dSpace_.getSimpleExtentNpoints()*BYTES_PER_SAMPLE;
+
       //c-style int-to-string conversion to track table numbers
       char name[ STRING_TO_INT_SIZE ];
       snprintf(name, STRING_TO_INT_SIZE , "T%08d", writeCount_++);
@@ -144,6 +162,17 @@ struct HDF5{
       //write data and close data set
       dSet_.write(data, dType_, dSpace_);
       dSet_.close();
+
+      // increment file size.
+      fileSizeBytes_ += tableSizeBytes_;
+
+      // If we exceed the default file size, generate a new one.
+      if( fileSizeBytes_ >= FILE_LIMIT_BYTES )
+      {
+         this->Close();
+         this->GenerateNewFile();
+         fileSizeBytes_ = 0;
+      }
    }
 
    template<typename T>

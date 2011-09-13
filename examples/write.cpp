@@ -12,7 +12,7 @@ using namespace std;
 int main(){
 
    //open file in WRITE mode
-   HDF5 file("psu_test_", hdf5::WRITE);
+   HDF5 file("psu_test", hdf5::WRITE);
    
    //create an instance of the custom HDF5 complex DataType
    ComplexHDF5 cpx;
