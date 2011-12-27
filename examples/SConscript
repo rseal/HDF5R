@@ -12,12 +12,10 @@ warnEnv = env.Clone(LIBS=libs, CXXFLAGS=flags, CPPPATH=include)
 
 writeProgram = warnEnv.Program(target='write', source=['write.cpp']);
 readProgram = warnEnv.Program(target='read', source=['read.cpp']);
-convProgram = warnEnv.Program(target='shs2hdf5', source=['shs2hdf5.cpp']);
 
 
 warnEnv.Depends(writeProgram, Glob('../include/*'))
 warnEnv.Depends(readProgram, Glob('../include/*'))
-warnEnv.Depends(convProgram, Glob('../include/*'))
 
 warnEnv.Clean('.', Glob('*.h5'));
 
