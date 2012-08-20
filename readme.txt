@@ -13,17 +13,16 @@ capable of reading and writing family files only ( at the moment ).
 
 Installation:
 
-1. Use "scons install-headers" as root to install headers in
-/usr/local/include/HDF5.
-2. To build the examples, you'll need the CommandLineParser submodule.
-   - from the root directory, do the following:
-      1. git submodule init
-      2. git submodule update
-      3. cd into deps/clp, login as root, and run "scons install-headers"
-      4. go back to the root project and type "scons"
+1. Use "waf install_headers" as root to install headers in /usr/local/include/hdf5r.
+2. Run the following to get local deps:
+      a. git submodule init
+      b. git submodule update
+      c. cd into deps/clp, login as root, and run "scons install-headers"
+      d. go back to the root project and type "scons"
 
 
 Dependencies:
 
-1. Latest scons ( http://www.scons.org ).
-
+1. HDF5 with c++ bindings enabled.
+2. WAF build system.
+3. CommandLineParser library to test examples.
