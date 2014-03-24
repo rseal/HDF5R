@@ -1,5 +1,5 @@
-#include <hdf5r/Complex.hpp>
-#include <hdf5r/HDF5.hpp>
+#include <Complex.hpp>
+#include <HDF5.hpp>
 #include <vector>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
