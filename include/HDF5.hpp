@@ -30,10 +30,10 @@ namespace hdf5{
 
 struct HDF5{
 
-   const static int STRING_TO_INT_SIZE  = 10;
-   const static int STRING_ATTRIB_SIZE  = 256;
-   const static double FILE_LIMIT_BYTES = 2048000000.0;
-   const static int BYTES_PER_SAMPLE    = 4;
+   static const int STRING_TO_INT_SIZE  = 10;
+   static const int STRING_ATTRIB_SIZE  = 256;
+   static constexpr double FILE_LIMIT_BYTES = 2048000000.0;
+   static const int BYTES_PER_SAMPLE    = 4;
 
    typedef boost::shared_ptr<H5::H5File> H5FilePtr;
    H5FilePtr file_;
